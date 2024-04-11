@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,41 +34,45 @@ public class UserController {
   @Autowired
   private RoleRepository roleRepository;
 
-  @PostMapping(path="/add") // Map ONLY POST Requests
-  public @ResponseBody String addNewUser (
-		  @RequestBody User user
-      ) {
-    // @ResponseBody means the returned String is the response, not a view name
-    // @RequestParam means it is a parameter from the GET or POST request
-	User n = user;
+  	
 
-    Set<Role> roles = new HashSet<>();
-    Role role_admin = roleRepository.findByRole("administrador").get();
-    roles.add(role_admin);
-    n.setRoles(roles);
-    
-    userRepository.save(n);
-    return "Saved";
-  }
-
-  @GetMapping(path="/getall")
-  public @ResponseBody Iterable<User> getAllUsers() {
-    // This returns a JSON or XML with the users
-    return userRepository.findAll();
-  }
-  
-	@GetMapping("/get/{id}")
-	public @ResponseBody Optional<User> getUser(@PathVariable(name = "id") int id) {
-		return userRepository.findById(id);
+	@GetMapping(path="/getall")
+	public @ResponseBody ResponseEntity<Iterable<User>> getAllUsers() {
+	    // This returns a JSON or XML with the users
+	    return new ResponseEntity(userRepository.findAll(), HttpStatus.OK);
 	}
   
+	@GetMapping("/get/{id}")
+	public @ResponseBody ResponseEntity<Optional<User>> getUser(@PathVariable(name = "id") int id) {
+		return new ResponseEntity(userRepository.findById(id), HttpStatus.OK);
+	}
+	
+	@PostMapping(path="/add") // Map ONLY POST Requests
+  	public @ResponseBody ResponseEntity<String> addNewUser (
+		  @RequestBody User user
+      ) {
+	    // @ResponseBody means the returned String is the response, not a view name
+	    // @RequestParam means it is a parameter from the GET or POST request
+		User n = user;
+	
+	    Set<Role> roles = new HashSet<>();
+	    Role role_admin = roleRepository.findByRole("administrador").get();
+	    roles.add(role_admin);
+	    n.setRoles(roles);
+	    
+	    userRepository.save(n);
+	
+	    return new ResponseEntity("User saved", HttpStatus.OK);
+	}
+	
 	@DeleteMapping("/delete/{id}")
-	public void deleteUser(@PathVariable(name = "id") int id) {
+	public @ResponseBody ResponseEntity<String> deleteUser(@PathVariable(name = "id") int id) {
 		userRepository.deleteById(id);
+		return new ResponseEntity("User Deleted", HttpStatus.OK);
 	}
 	
 	@PutMapping(path="/update/{id}") // Map ONLY PUT Requests
-	  public @ResponseBody String modifyUser (
+	  public @ResponseBody ResponseEntity<String> modifyUser (
 			  @PathVariable(name = "id") int id,
 			  @RequestBody User user
 	      ) {
@@ -74,10 +80,14 @@ public class UserController {
 	    // @RequestParam means it is a parameter from the GET or POST request
 		
 		if (!userRepository.existsById(id)) {
-			return "User does not exist";
+			return new ResponseEntity("User does not exist", HttpStatus.NOT_FOUND);
 		}
 		
 		User n = userRepository.findById(id).get();
+		if (!n.getUsername().equals(user.getUsername())) {
+			return new ResponseEntity("Username does not match", HttpStatus.BAD_REQUEST);
+		}
+		
 
 		n.setEmail(user.getEmail());
 		n.setPassword(user.getPassword());
@@ -91,6 +101,6 @@ public class UserController {
 	    //n.setRoles(roles);
 	    
 	    userRepository.save(n);
-	    return "Saved";
+	    return new ResponseEntity("User updated", HttpStatus.OK);
 	  }
 }
