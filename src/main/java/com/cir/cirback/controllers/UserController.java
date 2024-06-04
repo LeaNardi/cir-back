@@ -98,7 +98,7 @@ public class UserController {
 	    //Set<Role> roles = new HashSet<>();
 	    //Role role_admin = roleRepository.findByRole("administrador").get();
 	    //roles.add(role_admin);
-	    //n.setRoles(roles);
+	    n.setRoles(user.getRoles());
 	    
 	    userRepository.save(n);
 	    return new ResponseEntity("User updated", HttpStatus.OK);

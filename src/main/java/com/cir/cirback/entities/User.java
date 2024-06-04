@@ -6,6 +6,7 @@ import java.util.Set;
 
 
 import com.cir.cirback.entities.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +35,9 @@ public class User {
   private String dni;
   
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+  @JoinTable(name = "user_role", 
+  	joinColumns = @JoinColumn(name = "user_id"), 
+  	inverseJoinColumns = @JoinColumn(name = "role_id"))
+  //@JsonManagedReference
   private Set<Role> roles = new HashSet<>();
 }
