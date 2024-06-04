@@ -3,6 +3,8 @@ package com.cir.cirback.controllers;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cir.cirback.dtos.UserDTO;
+import com.cir.cirback.dtos.UserMapper;
 import com.cir.cirback.entities.Role;
 import com.cir.cirback.entities.User;
 import com.cir.cirback.repositories.RoleRepository;
@@ -33,13 +37,20 @@ public class UserController {
   private UserRepository userRepository;
   @Autowired
   private RoleRepository roleRepository;
+  @Autowired
+  private UserMapper userMapper;
 
   	
 
 	@GetMapping(path="/getall")
-	public @ResponseBody ResponseEntity<Iterable<User>> getAllUsers() {
+	public @ResponseBody ResponseEntity<Iterable<UserDTO>> getAllUsers() {
 	    // This returns a JSON or XML with the users
-	    return new ResponseEntity(userRepository.findAll(), HttpStatus.OK);
+	    return new ResponseEntity(
+	    		userRepository.findAll()
+	    			.stream()
+	    			.map(userMapper::userToUserDto)
+	    			.collect(Collectors.toList()),
+	    		HttpStatus.OK);
 	}
   
 	@GetMapping("/get/{id}")
