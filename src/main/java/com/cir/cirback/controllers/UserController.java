@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cir.cirback.dtos.RoleDTO;
 import com.cir.cirback.dtos.UserDTO;
 import com.cir.cirback.dtos.UserMapper;
 import com.cir.cirback.entities.Role;
@@ -54,8 +55,16 @@ public class UserController {
 	}
   
 	@GetMapping("/get/{id}")
-	public @ResponseBody ResponseEntity<Optional<User>> getUser(@PathVariable(name = "id") int id) {
-		return new ResponseEntity(userRepository.findById(id), HttpStatus.OK);
+	public @ResponseBody ResponseEntity<?> getUser(@PathVariable(name = "id") int id) {
+		
+		 Optional<User> userOptional = userRepository.findById(id);
+		
+		if (userOptional.isPresent()) {
+	        UserDTO userDTO = userMapper.userToUserDto(userOptional.get());
+	        return new ResponseEntity<>(userDTO, HttpStatus.OK);
+	    } else {
+	        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+	    }
 	}
 	
 	@PostMapping(path="/add") // Map ONLY POST Requests
