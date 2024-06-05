@@ -20,16 +20,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Role {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
-  
-  private String role;
-  //@ManyToMany(mappedBy = "roles")
-  //@ManyToMany(fetch = FetchType.LAZY)
-  //@JoinTable(name = "user_role", 
-	//joinColumns = @JoinColumn(name = "role_id"), 
-	//inverseJoinColumns = @JoinColumn(name = "user_id"))
-  //@JsonBackReference
-  //private Set<User> users = new HashSet<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private String role;
+    // @ManyToMany(mappedBy = "roles")
+    // @ManyToMany(fetch = FetchType.LAZY)
+    // @JoinTable(name = "user_role",
+    // joinColumns = @JoinColumn(name = "role_id"),
+    // inverseJoinColumns = @JoinColumn(name = "user_id"))
+    // @JsonBackReference
+    // private Set<User> users = new HashSet<>();
 }

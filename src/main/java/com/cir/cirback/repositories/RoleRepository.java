@@ -9,5 +9,5 @@ import com.cir.cirback.entities.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {
-	Optional<Role> findByRole(String role);
+    Optional<Role> findByRole(String role);
 }
