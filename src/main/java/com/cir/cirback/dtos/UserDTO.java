@@ -18,5 +18,5 @@ public class UserDTO {
     private String name;
     private String surname;
     private String dni;
-    private Set<Integer> roles;
+    private Set<Integer> roles_ids;
 }

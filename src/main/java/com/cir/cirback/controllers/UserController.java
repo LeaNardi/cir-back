@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cir.cirback.dtos.RoleDTO;
+import com.cir.cirback.dtos.UserCreateDTO;
 import com.cir.cirback.dtos.UserDTO;
 import com.cir.cirback.dtos.UserMapper;
+import com.cir.cirback.dtos.UserUpdateDTO;
 import com.cir.cirback.entities.Role;
 import com.cir.cirback.entities.User;
 import com.cir.cirback.repositories.RoleRepository;
@@ -67,16 +69,10 @@ public class UserController {
 
     @PostMapping(path = "/add") // Map ONLY POST Requests
     public @ResponseBody ResponseEntity<String> addNewUser(
-            @RequestBody User user) {
+            @RequestBody UserCreateDTO userCreate) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
-        User n = user;
-
-        Set<Role> roles = new HashSet<>();
-        Role role_admin = roleRepository.findByRole("administrador").get();
-        roles.add(role_admin);
-        n.setRoles(roles);
-
+        User n = userMapper.userCreateDTOtoUser(userCreate);
         userRepository.save(n);
 
         return new ResponseEntity("User saved", HttpStatus.OK);
@@ -91,7 +87,7 @@ public class UserController {
     @PutMapping(path = "/update/{id}") // Map ONLY PUT Requests
     public @ResponseBody ResponseEntity<String> modifyUser(
             @PathVariable(name = "id") int id,
-            @RequestBody User user) {
+            @RequestBody UserUpdateDTO userUpdate) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
@@ -100,20 +96,21 @@ public class UserController {
         }
 
         User n = userRepository.findById(id).get();
-        if (!n.getUsername().equals(user.getUsername())) {
-            return new ResponseEntity("Username does not match", HttpStatus.BAD_REQUEST);
-        }
+        //if (!n.getUsername().equals(user.getUsername())) {
+        //    return new ResponseEntity("Username does not match", HttpStatus.BAD_REQUEST);
+        //}
 
-        n.setEmail(user.getEmail());
-        n.setPassword(user.getPassword());
-        n.setName(user.getName());
-        n.setSurname(user.getSurname());
-        n.setDni(user.getDni());
-
-        // Set<Role> roles = new HashSet<>();
-        // Role role_admin = roleRepository.findByRole("administrador").get();
-        // roles.add(role_admin);
-        n.setRoles(user.getRoles());
+        n.setEmail(userUpdate.getEmail());
+        n.setName(userUpdate.getName());
+        n.setSurname(userUpdate.getSurname());
+        n.setDni(userUpdate.getDni());
+        
+        Set<Role> roles = userUpdate
+                .getRoles_ids()
+                .stream()
+                .map(roleId -> roleRepository.findById(roleId).get())
+                .collect(Collectors.toSet());
+        n.setRoles(roles);
 
         userRepository.save(n);
         return new ResponseEntity("User updated", HttpStatus.OK);

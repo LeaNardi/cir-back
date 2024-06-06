@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cir.cirback.dtos.RoleCreateDTO;
 import com.cir.cirback.dtos.RoleDTO;
 import com.cir.cirback.dtos.RoleMapper;
 import com.cir.cirback.entities.Role;
@@ -30,18 +32,6 @@ public class RoleController {
     private RoleRepository roleRepository;
     @Autowired
     private RoleMapper roleMapper;
-
-    @PostMapping(path = "/add") // Map ONLY POST Requests
-    public @ResponseBody String addNewRole(
-            @RequestParam String rolename) {
-        // @ResponseBody means the returned String is the response, not a view name
-        // @RequestParam means it is a parameter from the GET or POST request
-
-        Role role = new Role();
-        role.setRole(rolename);
-        roleRepository.save(role);
-        return "Saved";
-    }
 
     @GetMapping(path = "/getall")
     public @ResponseBody ResponseEntity<Iterable<RoleDTO>> getAllRoles() {
@@ -64,6 +54,17 @@ public class RoleController {
         } else {
             return new ResponseEntity<>("Role not found", HttpStatus.NOT_FOUND);
         }
+    }
+    
+    @PostMapping(path = "/add") // Map ONLY POST Requests
+    public @ResponseBody String addNewRole(
+    		@RequestBody RoleCreateDTO roleCreate) {
+        // @ResponseBody means the returned String is the response, not a view name
+        // @RequestParam means it is a parameter from the GET or POST request
+
+        Role role = roleMapper.roleCreateDtoToRole(roleCreate) ;
+        roleRepository.save(role);
+        return "Saved";
     }
 
     @DeleteMapping("/delete/{id}")
