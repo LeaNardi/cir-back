@@ -22,14 +22,12 @@ import com.cir.cirback.repositories.UserRepository;
 
 @RestController
 @CrossOrigin
-@RequestMapping(path = "/api/auth")
+@RequestMapping(path = "/api/authentication")
 public class AuthController {
 	@Autowired
     private UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
-    @Autowired
-    private UserMapper userMapper;
     
     @Autowired
     private JwtUtil jwtUtil;
