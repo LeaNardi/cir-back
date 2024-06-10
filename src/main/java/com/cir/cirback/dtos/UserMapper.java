@@ -18,7 +18,7 @@ public class UserMapper {
     public UserDTO userToUserDto(User user) {
         UserDTO userDTO = new UserDTO();
 
-        userDTO.setId(user.getId());
+        userDTO.setUserId(user.getUserId());
         userDTO.setUsername(user.getUsername());
         userDTO.setEmail(user.getEmail());
         userDTO.setName(user.getName());
@@ -27,7 +27,7 @@ public class UserMapper {
         Set<Integer> roles_ids = user
                 .getRoles()
                 .stream()
-                .map(Role::getId)
+                .map(Role::getRoleId)
                 .collect(Collectors.toSet());
         userDTO.setRoles_ids(roles_ids);
 

@@ -87,7 +87,7 @@ public class UserController {
     @PutMapping(path = "/update/{id}") // Map ONLY PUT Requests
     public @ResponseBody ResponseEntity<String> modifyUser(
             @PathVariable(name = "id") int id,
-            @RequestBody UserUpdateDTO userUpdate) {
+            @RequestBody UserDTO userUpdate) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
@@ -96,9 +96,13 @@ public class UserController {
         }
 
         User n = userRepository.findById(id).get();
-        //if (!n.getUsername().equals(user.getUsername())) {
-        //    return new ResponseEntity("Username does not match", HttpStatus.BAD_REQUEST);
-        //}
+        if (n.getUserId() != userUpdate.getUserId()) {
+            return new ResponseEntity("User Id does not match", HttpStatus.BAD_REQUEST);
+        }
+        
+        if (!n.getUsername().equals(userUpdate.getUsername())) {
+            return new ResponseEntity("Username does not match", HttpStatus.BAD_REQUEST);
+        }
 
         n.setEmail(userUpdate.getEmail());
         n.setName(userUpdate.getName());
@@ -114,5 +118,19 @@ public class UserController {
 
         userRepository.save(n);
         return new ResponseEntity("User updated", HttpStatus.OK);
+    }
+    
+    
+    @GetMapping("/myuser/{username}")
+    public @ResponseBody ResponseEntity<?> getMyUser(@PathVariable(name = "username") String username) {
+
+        Optional<User> userOptional = userRepository.findByUsername(username);
+
+        if (userOptional.isPresent()) {
+            UserDTO userDTO = userMapper.userToUserDto(userOptional.get());
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
     }
 }

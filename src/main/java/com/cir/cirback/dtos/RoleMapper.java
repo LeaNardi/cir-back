@@ -9,7 +9,7 @@ public class RoleMapper {
     public RoleDTO roleToRoleDto(Role role) {
         RoleDTO roleDTO = new RoleDTO();
 
-        roleDTO.setId(role.getId());
+        roleDTO.setRoleId(role.getRoleId());
         roleDTO.setRole(role.getRole());
 
         return roleDTO;

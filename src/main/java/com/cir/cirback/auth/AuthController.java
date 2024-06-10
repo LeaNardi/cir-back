@@ -49,7 +49,6 @@ public class AuthController {
         	};
         	
             final String jwt = jwtUtil.generateToken(user.getUsername());
-            //final String jwt = "Another try";
 
             return new ResponseEntity(new AuthenticationResponse(jwt), HttpStatus.OK);
     

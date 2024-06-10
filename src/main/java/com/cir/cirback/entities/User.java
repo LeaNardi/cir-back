@@ -23,7 +23,7 @@ import jakarta.persistence.ManyToMany;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Integer userId;
 
     private String username;
     private String email;
