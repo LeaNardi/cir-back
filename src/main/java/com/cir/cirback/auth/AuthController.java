@@ -1,6 +1,7 @@
 package com.cir.cirback.auth;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cir.cirback.dtos.UserDTO;
 import com.cir.cirback.dtos.UserMapper;
+import com.cir.cirback.entities.Role;
 import com.cir.cirback.entities.User;
 import com.cir.cirback.repositories.RoleRepository;
 import com.cir.cirback.repositories.UserRepository;
@@ -48,7 +50,9 @@ public class AuthController {
         		return new ResponseEntity("Incorrect username or password", HttpStatus.UNAUTHORIZED);
         	};
         	
-            final String jwt = jwtUtil.generateToken(user.getUsername());
+        	Integer role_id = user.getRole().getRoleId();
+        	
+            final String jwt = jwtUtil.generateToken(user.getUsername(), role_id);
 
             return new ResponseEntity(new AuthenticationResponse(jwt), HttpStatus.OK);
     

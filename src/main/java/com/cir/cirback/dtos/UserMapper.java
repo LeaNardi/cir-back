@@ -24,12 +24,14 @@ public class UserMapper {
         userDTO.setName(user.getName());
         userDTO.setSurname(user.getSurname());
         userDTO.setDni(user.getDni());
-        Set<Integer> roles_ids = user
-                .getRoles()
-                .stream()
-                .map(Role::getRoleId)
-                .collect(Collectors.toSet());
-        userDTO.setRoles_ids(roles_ids);
+//        Set<Integer> roles_ids = user
+//                .getRoles()
+//                .stream()
+//                .map(Role::getRoleId)
+//                .collect(Collectors.toSet());
+//        userDTO.setRoles_ids(roles_ids);
+        Integer role_id = user.getRole().getRoleId();
+        userDTO.setRole_id(role_id);
 
         return userDTO;
     }
@@ -43,12 +45,9 @@ public class UserMapper {
         user.setName(userCreate.getName());
         user.setSurname(userCreate.getSurname());
         user.setDni(userCreate.getDni());
-        Set<Role> roles = userCreate
-                .getRoles_ids()
-                .stream()
-                .map(roleId -> roleRepository.findById(roleId).get())
-                .collect(Collectors.toSet());
-        user.setRoles(roles);    	
+        Integer roleId = userCreate.getRole_id();
+        Role role = roleRepository.findById(roleId).get();
+        user.setRole(role);
     	
     	return user;
     }

@@ -109,12 +109,14 @@ public class UserController {
         n.setSurname(userUpdate.getSurname());
         n.setDni(userUpdate.getDni());
         
-        Set<Role> roles = userUpdate
-                .getRoles_ids()
-                .stream()
-                .map(roleId -> roleRepository.findById(roleId).get())
-                .collect(Collectors.toSet());
-        n.setRoles(roles);
+//        Set<Role> roles = userUpdate
+//                .getRoles_ids()
+//                .stream()
+//                .map(roleId -> roleRepository.findById(roleId).get())
+//                .collect(Collectors.toSet());
+//        n.setRoles(roles);
+        Role role = roleRepository.findById(userUpdate.getRole_id()).get();
+        n.setRole(role);
 
         userRepository.save(n);
         return new ResponseEntity("User updated", HttpStatus.OK);

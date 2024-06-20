@@ -5,10 +5,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
+import com.cir.cirback.entities.Role;
+
 import java.util.Date;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 @Component
@@ -21,8 +24,9 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, Base64.getEncoder().encodeToString(SECRET_KEY.getBytes())).compact();
     }
     
-    public String generateToken(String userName) {
+    public String generateToken(String userName, Integer role_id) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role_id);
         return createToken(claims, userName);
     }
     

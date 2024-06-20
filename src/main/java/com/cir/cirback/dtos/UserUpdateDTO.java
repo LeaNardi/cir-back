@@ -13,5 +13,5 @@ public class UserUpdateDTO {
     private String name;
     private String surname;
     private String dni;
-    private Set<Integer> roles_ids;
+    private Integer role_id;
 }
