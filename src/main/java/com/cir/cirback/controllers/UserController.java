@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.List;
+import com.google.gson.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,7 +64,8 @@ public class UserController {
             UserDTO userDTO = userMapper.userToUserDto(userOptional.get());
             return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        	String jsonMessage = new Gson().toJson("User not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -75,13 +77,18 @@ public class UserController {
         User n = userMapper.userCreateDTOtoUser(userCreate);
         userRepository.save(n);
 
-        return new ResponseEntity("User saved", HttpStatus.OK);
+        //return new ResponseEntity("{\"Message\": \"User saved\"}", HttpStatus.OK);
+        //String json = new Gson().toJson(userCreate);
+        String jsonMessage = new Gson().toJson("User Saved");
+        return new ResponseEntity(jsonMessage, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public @ResponseBody ResponseEntity<String> deleteUser(@PathVariable(name = "id") int id) {
         userRepository.deleteById(id);
-        return new ResponseEntity("User Deleted", HttpStatus.OK);
+        //return new ResponseEntity("{\"Message\": \"User Deleted\"}", HttpStatus.OK);
+        String jsonMessage = new Gson().toJson("User Deleted");
+        return new ResponseEntity(jsonMessage, HttpStatus.OK);
     }
 
     @PutMapping(path = "/update/{id}") // Map ONLY PUT Requests
@@ -90,18 +97,19 @@ public class UserController {
             @RequestBody UserDTO userUpdate) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
-
+    	Gson gson = new Gson();
+    	
         if (!userRepository.existsById(id)) {
-            return new ResponseEntity("User does not exist", HttpStatus.NOT_FOUND);
+            return new ResponseEntity(gson.toJson("User does not exist"), HttpStatus.NOT_FOUND);
         }
 
         User n = userRepository.findById(id).get();
         if (n.getUserId() != userUpdate.getUserId()) {
-            return new ResponseEntity("User Id does not match", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(gson.toJson("User Id does not match"), HttpStatus.BAD_REQUEST);
         }
         
         if (!n.getUsername().equals(userUpdate.getUsername())) {
-            return new ResponseEntity("Username does not match", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity(gson.toJson("Username does not match"), HttpStatus.BAD_REQUEST);
         }
 
         n.setEmail(userUpdate.getEmail());
@@ -119,7 +127,7 @@ public class UserController {
         n.setRole(role);
 
         userRepository.save(n);
-        return new ResponseEntity("User updated", HttpStatus.OK);
+        return new ResponseEntity(gson.toJson("User updated"), HttpStatus.OK);
     }
     
     
@@ -132,7 +140,8 @@ public class UserController {
             UserDTO userDTO = userMapper.userToUserDto(userOptional.get());
             return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        	String jsonMessage = new Gson().toJson("User not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
         }
     }
 }
