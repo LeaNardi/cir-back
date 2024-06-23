@@ -2,6 +2,7 @@ package com.cir.cirback.controllers;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.google.gson.Gson;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,8 @@ public class EspecialidadController {
         	EspecialidadDTO especialidadDTO = especialidadMapper.especialidadToEspecialidadDto(especialidadOptional.get());
             return new ResponseEntity<>(especialidadDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Especialidad not found", HttpStatus.NOT_FOUND);
+        	String jsonMessage = new Gson().toJson("Especialidad not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
         }
     }
     

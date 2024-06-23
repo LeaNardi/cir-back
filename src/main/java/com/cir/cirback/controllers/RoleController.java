@@ -2,6 +2,7 @@ package com.cir.cirback.controllers;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.google.gson.Gson;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,24 +53,27 @@ public class RoleController {
             RoleDTO roleDTO = roleMapper.roleToRoleDto(roleOptional.get());
             return new ResponseEntity<>(roleDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Role not found", HttpStatus.NOT_FOUND);
+        	String jsonMessage = new Gson().toJson("Role not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
         }
     }
     
     @PostMapping(path = "/add") // Map ONLY POST Requests
-    public @ResponseBody String addNewRole(
+    public @ResponseBody ResponseEntity<String> addNewRole(
     		@RequestBody RoleCreateDTO roleCreate) {
         // @ResponseBody means the returned String is the response, not a view name
         // @RequestParam means it is a parameter from the GET or POST request
 
         Role role = roleMapper.roleCreateDtoToRole(roleCreate) ;
         roleRepository.save(role);
-        return "Saved";
+        String jsonMessage = new Gson().toJson("Role saved");
+        return new ResponseEntity(jsonMessage, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
     public @ResponseBody ResponseEntity<String> deleteRole(@PathVariable(name = "id") int id) {
         roleRepository.deleteById(id);
-        return new ResponseEntity("Role Deleted", HttpStatus.OK);
+        String jsonMessage = new Gson().toJson("Role Deleted");
+        return new ResponseEntity(jsonMessage, HttpStatus.OK);
     }
 }

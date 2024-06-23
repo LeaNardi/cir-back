@@ -2,6 +2,7 @@ package com.cir.cirback.controllers;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.google.gson.Gson;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,7 +50,8 @@ public class TituloController {
         	TituloDTO tituloDTO = tituloMapper.tituloToTituloDto(tituloOptional.get());
             return new ResponseEntity<>(tituloDTO, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("Titulo not found", HttpStatus.NOT_FOUND);
+        	String jsonMessage = new Gson().toJson("Titulo not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
         }
     }
     
