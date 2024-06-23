@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,21 +27,33 @@ public class Profesional {
     private String direccion;
     private String telefono;
     
+    private Date fechaIngreso;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "especialidadId")
     private Especialidad especialidad;
     
-    private Date fechaIngreso;
-    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tituloId")
     private Titulo titulo;
     
-    private List<String> formacionesComplementarias;
-    private List<String> publicacionesRevistas;
-    private List<String> presentacionesCongresos;
-    private List<String> experienciaLaboral;
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "formaciones", joinColumns = @JoinColumn(name = "profesional_id"))
+    @Column(name = "formacion", nullable = false)
+    private List<String> formacionesComplementarias = new ArrayList<>();;
     
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "publicaciones", joinColumns = @JoinColumn(name = "profesional_id"))
+    @Column(name = "publicacion", nullable = false)
+    private List<String> publicacionesRevistas = new ArrayList<>();;
     
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "presentaciones", joinColumns = @JoinColumn(name = "profesional_id"))
+    @Column(name = "presentacion", nullable = false)
+    private List<String> presentacionesCongresos = new ArrayList<>();;
+    
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "experiencias", joinColumns = @JoinColumn(name = "profesional_id"))
+    @Column(name = "experiencia", nullable = false)
+    private List<String> experienciaLaboral = new ArrayList<>();;
 }
