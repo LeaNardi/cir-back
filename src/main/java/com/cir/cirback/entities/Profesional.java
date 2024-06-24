@@ -20,7 +20,7 @@ import jakarta.persistence.ManyToOne;
 @NoArgsConstructor
 public class Profesional {
     @Id
-    private String DNI;
+    private String dni;
     private String nombre;
     private String apellido;
     private String email;

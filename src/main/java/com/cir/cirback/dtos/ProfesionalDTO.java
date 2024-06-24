@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ProfesionalDTO {
-    private String DNI;
+    private String dni;
     private String nombre;
     private String apellido;
     private String email;

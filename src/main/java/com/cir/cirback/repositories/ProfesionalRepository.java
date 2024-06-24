@@ -9,7 +9,7 @@ import com.cir.cirback.entities.Profesional;
 
 @Repository
 public interface ProfesionalRepository extends JpaRepository<Profesional, Integer> {
-    Optional<Profesional> findByDNI(String DNI);
-    void deleteByDNI(String DNI);
-    boolean existsByDNI(String DNI);
+    Optional<Profesional> findByDni(String dni);
+    void deleteByDni(String dni);
+    boolean existsByDni(String dni);
 }

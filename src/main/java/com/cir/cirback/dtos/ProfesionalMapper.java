@@ -19,7 +19,7 @@ public class ProfesionalMapper {
     public ProfesionalDTO profesionalToProfesionalDto(Profesional profesional) {
     	ProfesionalDTO profesionalDTO = new ProfesionalDTO();
 
-        profesionalDTO.setDNI(profesional.getDNI());
+        profesionalDTO.setDni(profesional.getDni());
         profesionalDTO.setNombre(profesional.getNombre());
         profesionalDTO.setApellido(profesional.getApellido());
         profesionalDTO.setEmail(profesional.getEmail());
@@ -39,7 +39,7 @@ public class ProfesionalMapper {
     public Profesional ProfesionalDtotoprofesional(ProfesionalDTO profesionalDTO) {
     	Profesional profesional = new Profesional();
     	
-        profesional.setDNI(profesionalDTO.getDNI());
+        profesional.setDni(profesionalDTO.getDni());
         profesional.setNombre(profesionalDTO.getNombre());
         profesional.setApellido(profesionalDTO.getApellido());
         profesional.setEmail(profesionalDTO.getEmail());

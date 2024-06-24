@@ -55,10 +55,10 @@ public class ProfesionalController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/get/{DNI}")
-    public @ResponseBody ResponseEntity<?> getProfesional(@PathVariable(name = "DNI") String DNI) {
+    @GetMapping("/get/{dni}")
+    public @ResponseBody ResponseEntity<?> getProfesional(@PathVariable(name = "dni") String dni) {
 
-        Optional<Profesional> profesionalOptional = profesionalRepository.findByDNI(DNI);
+        Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(dni);
 
         if (profesionalOptional.isPresent()) {
         	ProfesionalDTO profesionalDTO = profesionalMapper.profesionalToProfesionalDto(profesionalOptional.get());
@@ -79,31 +79,31 @@ public class ProfesionalController {
         return new ResponseEntity(jsonMessage, HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{DNI}")
-    public @ResponseBody ResponseEntity<String> deleteProfesional(@PathVariable(name = "DNI") String DNI) {
-    	profesionalRepository.deleteByDNI(DNI);
+    @DeleteMapping("/delete/{dni}")
+    public @ResponseBody ResponseEntity<String> deleteProfesional(@PathVariable(name = "dni") String dni) {
+    	profesionalRepository.deleteByDni(dni);
         //return new ResponseEntity("{\"Message\": \"User Deleted\"}", HttpStatus.OK);
         String jsonMessage = new Gson().toJson("Profesional Deleted");
         return new ResponseEntity(jsonMessage, HttpStatus.OK);
     }
 
-    @PutMapping(path = "/update/{DNI}")
+    @PutMapping(path = "/update/{dni}")
     public @ResponseBody ResponseEntity<String> modifyProfesional(
-            @PathVariable(name = "DNI") String DNI,
+            @PathVariable(name = "dni") String dni,
             @RequestBody ProfesionalDTO profesionalDTO) {
     	Gson gson = new Gson();
     	
-        if (!profesionalRepository.existsByDNI(DNI)) {
+        if (!profesionalRepository.existsByDni(dni)) {
             return new ResponseEntity(gson.toJson("Profesional does not exist"), HttpStatus.NOT_FOUND);
         }
 
-        Profesional profesional = profesionalRepository.findByDNI(DNI).get();
-        if (profesional.getDNI() != profesionalDTO.getDNI()) {
+        Profesional profesional = profesionalRepository.findByDni(dni).get();
+        if (profesional.getDni() != profesionalDTO.getDni()) {
             return new ResponseEntity(gson.toJson("Profesional DNI does not match"), HttpStatus.BAD_REQUEST);
         }
 
         
-        profesional.setDNI(profesionalDTO.getDNI());
+        profesional.setDni(profesionalDTO.getDni());
         profesional.setNombre(profesionalDTO.getNombre());
         profesional.setApellido(profesionalDTO.getApellido());
         profesional.setEmail(profesionalDTO.getEmail());
