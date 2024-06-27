@@ -98,7 +98,7 @@ public class ProfesionalController {
         }
 
         Profesional profesional = profesionalRepository.findByDni(dni).get();
-        if (profesional.getDni() != profesionalDTO.getDni()) {
+        if (!profesional.getDni().equals(profesionalDTO.getDni())) {
             return new ResponseEntity(gson.toJson("Profesional DNI does not match"), HttpStatus.BAD_REQUEST);
         }
 
