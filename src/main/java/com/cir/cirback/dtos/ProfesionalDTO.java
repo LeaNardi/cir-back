@@ -16,6 +16,7 @@ public class ProfesionalDTO {
     private String direccion;
     private String telefono;
     private Date fechaIngreso;
+    private boolean activo;
     private Integer especialidadId;
     private Integer tituloId;
     private List<String> formacionesComplementarias;

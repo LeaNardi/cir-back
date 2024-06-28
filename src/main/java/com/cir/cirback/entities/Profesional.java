@@ -28,6 +28,7 @@ public class Profesional {
     private String telefono;
     
     private Date fechaIngreso;
+    private boolean activo;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "especialidadId")

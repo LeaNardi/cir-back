@@ -111,6 +111,7 @@ public class ProfesionalController {
         profesional.setTelefono(profesionalDTO.getTelefono());
         Especialidad especialidad = especialidadRepository.findById(profesionalDTO.getEspecialidadId()).get();
         profesional.setEspecialidad(especialidad);
+        profesional.setActivo(profesionalDTO.isActivo());
         profesional.setFechaIngreso(profesionalDTO.getFechaIngreso());
         Titulo titulo = tituloRepository.findById(profesionalDTO.getTituloId()).get();
         profesional.setTitulo(titulo);
