@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cir.cirback.entities.Especialidad;
 import com.cir.cirback.entities.Profesional;
 import com.cir.cirback.entities.Titulo;
+import com.cir.cirback.dtos.ExistsResponse;
 import com.cir.cirback.dtos.ProfesionalDTO;
 import com.cir.cirback.dtos.ProfesionalMapper;
 import com.cir.cirback.repositories.EspecialidadRepository;
@@ -125,5 +126,22 @@ public class ProfesionalController {
         return new ResponseEntity(gson.toJson("Profesional updated"), HttpStatus.OK);
     }
     
+    @GetMapping("/exists/{dni}")
+    public @ResponseBody ResponseEntity<?> existsProfesional(@PathVariable(name = "dni") String dni) {
+    	ExistsResponse response = new ExistsResponse();
+    	Profesional profesional;
+        //Optional<Profesional> profesionalOptional = profesionalRepository.existsByDni(dni);
+        Boolean exists = profesionalRepository.existsByDni(dni);
+        response.setExists(exists);
+        if (exists) {
+        	profesional = profesionalRepository.findByDni(dni).get();
+        	response.setActive(profesional.isActivo());
+        } else {
+        	response.setActive(false);
+        }
+        String jsonMessage = new Gson().toJson(response);
+        return new ResponseEntity<>(jsonMessage, HttpStatus.OK);
+    }
  
 }
+
