@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import java.util.List;
 import com.google.gson.Gson;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -81,11 +83,18 @@ public class ProfesionalController {
     }
 
     @DeleteMapping("/delete/{dni}")
+    @Transactional
     public @ResponseBody ResponseEntity<String> deleteProfesional(@PathVariable(name = "dni") String dni) {
-    	profesionalRepository.deleteByDni(dni);
-        //return new ResponseEntity("{\"Message\": \"User Deleted\"}", HttpStatus.OK);
-        String jsonMessage = new Gson().toJson("Profesional Deleted");
-        return new ResponseEntity(jsonMessage, HttpStatus.OK);
+    	Boolean exists = profesionalRepository.existsByDni(dni);
+    	if (exists) {
+    		profesionalRepository.deleteByDni(dni);
+    		String jsonMessage = new Gson().toJson("Profesional Deleted");
+            return new ResponseEntity(jsonMessage, HttpStatus.OK);
+        } else {
+        	String jsonMessage = new Gson().toJson("Profesional No Existe");
+            return new ResponseEntity(jsonMessage, HttpStatus.OK);
+        }
+    		
     }
 
     @PutMapping(path = "/update/{dni}")
