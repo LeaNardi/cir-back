@@ -36,6 +36,17 @@ public class ProfesionalMapper {
 
         return profesionalDTO;
     }
+    
+    public ProfesionalDTOSimp profesionalToProfesionalDtoSimplified(Profesional profesional) {
+    	ProfesionalDTOSimp profesionalDTOSimp = new ProfesionalDTOSimp();
+
+    	profesionalDTOSimp.setDni(profesional.getDni());
+    	profesionalDTOSimp.setNombre(profesional.getNombre());
+    	profesionalDTOSimp.setApellido(profesional.getApellido());
+    	profesionalDTOSimp.setEspecialidadId(profesional.getEspecialidad().getEspecialidadId());
+
+        return profesionalDTOSimp;
+    }
 
     public Profesional ProfesionalDtotoprofesional(ProfesionalDTO profesionalDTO) {
     	Profesional profesional = new Profesional();

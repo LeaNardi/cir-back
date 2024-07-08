@@ -41,20 +41,20 @@ public class Profesional {
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "formaciones", joinColumns = @JoinColumn(name = "profesional_id"))
     @Column(name = "formacion", nullable = false)
-    private List<String> formacionesComplementarias = new ArrayList<>();;
+    private List<String> formacionesComplementarias = new ArrayList<>();
     
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "publicaciones", joinColumns = @JoinColumn(name = "profesional_id"))
     @Column(name = "publicacion", nullable = false)
-    private List<String> publicacionesRevistas = new ArrayList<>();;
+    private List<String> publicacionesRevistas = new ArrayList<>();
     
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "presentaciones", joinColumns = @JoinColumn(name = "profesional_id"))
     @Column(name = "presentacion", nullable = false)
-    private List<String> presentacionesCongresos = new ArrayList<>();;
+    private List<String> presentacionesCongresos = new ArrayList<>();
     
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "experiencias", joinColumns = @JoinColumn(name = "profesional_id"))
     @Column(name = "experiencia", nullable = false)
-    private List<String> experienciaLaboral = new ArrayList<>();;
+    private List<String> experienciaLaboral = new ArrayList<>();
 }

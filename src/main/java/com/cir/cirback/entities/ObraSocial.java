@@ -14,5 +14,5 @@ public class ObraSocial {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer obraSocialId;
-    private String nombreOS;
+    private String obraSocial;
 }

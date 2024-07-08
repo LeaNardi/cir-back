@@ -29,6 +29,7 @@ import com.cir.cirback.entities.Profesional;
 import com.cir.cirback.entities.Titulo;
 import com.cir.cirback.dtos.ExistsResponse;
 import com.cir.cirback.dtos.ProfesionalDTO;
+import com.cir.cirback.dtos.ProfesionalDTOSimp;
 import com.cir.cirback.dtos.ProfesionalMapper;
 import com.cir.cirback.repositories.EspecialidadRepository;
 import com.cir.cirback.repositories.ProfesionalRepository;
@@ -54,6 +55,16 @@ public class ProfesionalController {
                 profesionalRepository.findAll()
                         .stream()
                         .map(profesionalMapper::profesionalToProfesionalDto)
+                        .collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+    
+    @GetMapping(path = "/getallsimplified")
+    public @ResponseBody ResponseEntity<Iterable<ProfesionalDTOSimp>> getAllProfesionalesSimplified() {
+        return new ResponseEntity(
+                profesionalRepository.findAll()
+                        .stream()
+                        .map(profesionalMapper::profesionalToProfesionalDtoSimplified)
                         .collect(Collectors.toList()),
                 HttpStatus.OK);
     }
