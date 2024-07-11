@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,6 +43,7 @@ public class TurnoController {
 	@Autowired
     private TurnoMapper turnoMapper;
 	
+	//Posiblemente no se use
 	@GetMapping("/get/{dniprofesional}")
     public @ResponseBody ResponseEntity<?> getTurnosParaProfesional(@PathVariable(name = "dniprofesional") String dniprofesional,
     		@RequestParam(name = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
@@ -60,6 +62,49 @@ public class TurnoController {
         }
 		
     }
+	
+	@GetMapping("/getdisponibles/{dniprofesional}")
+    public @ResponseBody ResponseEntity<?> getTurnosDisponibles(@PathVariable(name = "dniprofesional") String dniprofesional) {
+		
+		Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(dniprofesional);
+        if (profesionalOptional.isPresent()) {
+        	Profesional profesional = profesionalOptional.get();
+        	List<Turno> turnos = turnoRepository.findByProfesional(profesional);
+        	List<Turno> turnos_disponibles = turnos.stream().filter(t -> t.getPaciente() == null).collect(Collectors.toList());
+        	
+        	return new ResponseEntity(
+        			turnos_disponibles.stream().map(turnoMapper::turnoToTurnoDto).collect(Collectors.toList()),
+                    HttpStatus.OK);
+        } else {
+        	String jsonMessage = new Gson().toJson("Profesional not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+		
+    }
+	
+	@PutMapping(path = "/reservarturno")
+	public @ResponseBody ResponseEntity<String> generateTurnos(
+            @RequestBody TurnoDTO turnoRequestDTO){
+		Optional<Turno> turnoOptional = turnoRepository.findByTurnoId(turnoRequestDTO.getTurnoId());
+		
+		if (turnoOptional.isPresent()) {
+        	Turno turno = turnoOptional.get();
+        	Turno turnoReq = turnoMapper.turnoDtoToTurno(turnoRequestDTO);
+        	
+        	turno.setPaciente(turnoReq.getPaciente());
+        	turno.setObraSocial(turnoReq.getObraSocial());
+        	
+        	turnoRepository.save(turno);
+        	
+        	String jsonMessage = new Gson().toJson("Turno Saved");
+            return new ResponseEntity(jsonMessage, HttpStatus.OK);
+        	
+        	
+        } else {
+        	String jsonMessage = new Gson().toJson("Turno not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+	}
 	
     @PostMapping(path = "/generate") // Map ONLY POST Requests
     public @ResponseBody ResponseEntity<String> generateTurnos(
