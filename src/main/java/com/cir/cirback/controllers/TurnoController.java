@@ -63,6 +63,18 @@ public class TurnoController {
 		
     }
 	
+	@GetMapping("/getturno/{turnoId}")
+    public @ResponseBody ResponseEntity<?> getTurnosPorId(@PathVariable(name = "turnoId") Integer turnoId) {
+		Optional<Turno> turnoOptional = turnoRepository.findByTurnoId(turnoId);
+		if (turnoOptional.isPresent()) {
+        	TurnoDTO turnoDto = turnoMapper.turnoToTurnoDto(turnoOptional.get());
+            return new ResponseEntity(turnoDto, HttpStatus.OK);	
+        } else {
+        	String jsonMessage = new Gson().toJson("Turno not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+    }
+	
 	@GetMapping("/getdisponibles/{dniprofesional}")
     public @ResponseBody ResponseEntity<?> getTurnosDisponibles(@PathVariable(name = "dniprofesional") String dniprofesional) {
 		
@@ -83,7 +95,7 @@ public class TurnoController {
     }
 	
 	@PutMapping(path = "/reservarturno")
-	public @ResponseBody ResponseEntity<String> generateTurnos(
+	public @ResponseBody ResponseEntity<?> generateTurnos(
             @RequestBody TurnoDTO turnoRequestDTO){
 		Optional<Turno> turnoOptional = turnoRepository.findByTurnoId(turnoRequestDTO.getTurnoId());
 		

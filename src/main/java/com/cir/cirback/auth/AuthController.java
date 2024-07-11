@@ -52,7 +52,7 @@ public class AuthController {
         	
         	Integer role_id = user.getRole().getRoleId();
         	
-            final String jwt = jwtUtil.generateToken(user.getUsername(), role_id);
+            final String jwt = jwtUtil.generateToken(user.getUsername(), user.getUserId(), role_id);
 
             return new ResponseEntity(new AuthenticationResponse(jwt), HttpStatus.OK);
     
