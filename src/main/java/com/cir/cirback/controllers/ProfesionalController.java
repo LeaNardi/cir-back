@@ -82,6 +82,20 @@ public class ProfesionalController {
             return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
         }
     }
+    
+    @GetMapping("/getsimplified/{dni}")
+    public @ResponseBody ResponseEntity<?> getProfesionalSimplified(@PathVariable(name = "dni") String dni) {
+
+        Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(dni);
+
+        if (profesionalOptional.isPresent()) {
+        	ProfesionalDTOSimp profesionalDTO = profesionalMapper.profesionalToProfesionalDtoSimplified(profesionalOptional.get());
+            return new ResponseEntity<>(profesionalDTO, HttpStatus.OK);
+        } else {
+        	String jsonMessage = new Gson().toJson("Profesional not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+    }
 
     @PostMapping(path = "/add")
     public @ResponseBody ResponseEntity<String> addNewProfesional(

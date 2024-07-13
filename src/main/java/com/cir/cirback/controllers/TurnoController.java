@@ -23,13 +23,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cir.cirback.entities.Turno;
+import com.cir.cirback.entities.User;
 import com.cir.cirback.dtos.ProfesionalDTO;
 import com.cir.cirback.dtos.TurnoDTO;
 import com.cir.cirback.dtos.TurnoMapper;
 import com.cir.cirback.dtos.TurnosGenerateDTO;
+import com.cir.cirback.dtos.UserDTO;
 import com.cir.cirback.entities.Profesional;
 import com.cir.cirback.repositories.ProfesionalRepository;
 import com.cir.cirback.repositories.TurnoRepository;
+import com.cir.cirback.repositories.UserRepository;
 import com.google.gson.Gson;
 
 @RestController // This means that this class is a Controller
@@ -42,9 +45,11 @@ public class TurnoController {
     private ProfesionalRepository profesionalRepository;
 	@Autowired
     private TurnoMapper turnoMapper;
+	@Autowired
+    private UserRepository userRepository;
 	
 	//Posiblemente no se use
-	@GetMapping("/get/{dniprofesional}")
+	/*@GetMapping("/get/{dniprofesional}")
     public @ResponseBody ResponseEntity<?> getTurnosParaProfesional(@PathVariable(name = "dniprofesional") String dniprofesional,
     		@RequestParam(name = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
 		
@@ -61,7 +66,7 @@ public class TurnoController {
             return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
         }
 		
-    }
+    }*/
 	
 	@GetMapping("/getturno/{turnoId}")
     public @ResponseBody ResponseEntity<?> getTurnosPorId(@PathVariable(name = "turnoId") Integer turnoId) {
@@ -82,7 +87,7 @@ public class TurnoController {
         if (profesionalOptional.isPresent()) {
         	Profesional profesional = profesionalOptional.get();
         	List<Turno> turnos = turnoRepository.findByProfesional(profesional);
-        	List<Turno> turnos_disponibles = turnos.stream().filter(t -> t.getPaciente() == null).collect(Collectors.toList());
+        	List<Turno> turnos_disponibles = turnos.stream().filter(t -> t.getPaciente() == null && t.getFecha().isAfter(LocalDate.now().minusDays(1)) ).collect(Collectors.toList());
         	
         	return new ResponseEntity(
         			turnos_disponibles.stream().map(turnoMapper::turnoToTurnoDto).collect(Collectors.toList()),
@@ -94,8 +99,26 @@ public class TurnoController {
 		
     }
 	
+	@GetMapping("/getmisturnos/{id}")
+    public @ResponseBody ResponseEntity<?> getMisTurnos(@PathVariable(name = "id") int id) {
+		Optional<User> userOptional = userRepository.findById(id);
+
+        if (userOptional.isPresent()) {
+        	List<Turno> turnos = turnoRepository.findByPaciente(userOptional.get());
+        	List<Turno> turnos_futuros = turnos.stream().filter(t -> t.getFecha().isAfter(LocalDate.now().minusDays(1)) ).collect(Collectors.toList());
+        	
+            return new ResponseEntity<>(
+            		turnos_futuros.stream().map(turnoMapper::turnoToTurnoDto).collect(Collectors.toList()),
+            		HttpStatus.OK);
+        } else {
+        	String jsonMessage = new Gson().toJson("User not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+		
+    }
+	
 	@PutMapping(path = "/reservarturno")
-	public @ResponseBody ResponseEntity<?> generateTurnos(
+	public @ResponseBody ResponseEntity<?> ReservarTurno(
             @RequestBody TurnoDTO turnoRequestDTO){
 		Optional<Turno> turnoOptional = turnoRepository.findByTurnoId(turnoRequestDTO.getTurnoId());
 		
@@ -109,6 +132,30 @@ public class TurnoController {
         	turnoRepository.save(turno);
         	
         	String jsonMessage = new Gson().toJson("Turno Saved");
+            return new ResponseEntity(jsonMessage, HttpStatus.OK);
+        	
+        	
+        } else {
+        	String jsonMessage = new Gson().toJson("Turno not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+	}
+	
+	@PutMapping(path = "/cancelarturno")
+	public @ResponseBody ResponseEntity<?> cancelarTurno(
+            @RequestBody TurnoDTO turnoRequestDTO){
+		Optional<Turno> turnoOptional = turnoRepository.findByTurnoId(turnoRequestDTO.getTurnoId());
+		
+		if (turnoOptional.isPresent()) {
+        	Turno turno = turnoOptional.get();
+        	//Turno turnoReq = turnoMapper.turnoDtoToTurno(turnoRequestDTO);
+        	
+        	turno.setPaciente(null);
+        	turno.setObraSocial(null);
+        	
+        	turnoRepository.save(turno);
+        	
+        	String jsonMessage = new Gson().toJson("Turno Cancelled");
             return new ResponseEntity(jsonMessage, HttpStatus.OK);
         	
         	
