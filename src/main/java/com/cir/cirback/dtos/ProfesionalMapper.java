@@ -27,6 +27,7 @@ public class ProfesionalMapper {
         profesionalDTO.setTelefono(profesional.getTelefono());
         profesionalDTO.setFechaIngreso(profesional.getFechaIngreso());
         profesionalDTO.setActivo(profesional.isActivo());
+        profesionalDTO.setMotivobaja(profesional.getMotivobaja());
         profesionalDTO.setEspecialidadId(profesional.getEspecialidad().getEspecialidadId());
         profesionalDTO.setTituloId(profesional.getTitulo().getTituloId());
         profesionalDTO.setFormacionesComplementarias(profesional.getFormacionesComplementarias());
@@ -59,6 +60,7 @@ public class ProfesionalMapper {
         profesional.setTelefono(profesionalDTO.getTelefono());
         profesional.setFechaIngreso(profesionalDTO.getFechaIngreso());
         profesional.setActivo(profesionalDTO.isActivo());
+        profesional.setMotivobaja(profesionalDTO.getMotivobaja());
         Especialidad especialidad = especialidadRepository.findById(profesionalDTO.getEspecialidadId()).get();
         profesional.setEspecialidad(especialidad);
         Titulo titulo = tituloRepository.findById(profesionalDTO.getTituloId()).get();

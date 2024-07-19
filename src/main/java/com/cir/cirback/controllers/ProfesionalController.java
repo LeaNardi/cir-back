@@ -147,6 +147,7 @@ public class ProfesionalController {
         Especialidad especialidad = especialidadRepository.findById(profesionalDTO.getEspecialidadId()).get();
         profesional.setEspecialidad(especialidad);
         profesional.setActivo(profesionalDTO.isActivo());
+        profesional.setMotivobaja(profesionalDTO.getMotivobaja());
         profesional.setFechaIngreso(profesionalDTO.getFechaIngreso());
         Titulo titulo = tituloRepository.findById(profesionalDTO.getTituloId()).get();
         profesional.setTitulo(titulo);
@@ -159,6 +160,26 @@ public class ProfesionalController {
         profesionalRepository.save(profesional);
         return new ResponseEntity(gson.toJson("Profesional updated"), HttpStatus.OK);
     }
+    
+    @PutMapping(path = "/disable/{dni}")
+    public @ResponseBody ResponseEntity<String> disableProfesional(
+            @PathVariable(name = "dni") String dni,
+            @RequestBody String motivo_baja) {
+    	Gson gson = new Gson();
+    	
+        if (!profesionalRepository.existsByDni(dni)) {
+            return new ResponseEntity(gson.toJson("Profesional does not exist"), HttpStatus.NOT_FOUND);
+        }
+
+        Profesional profesional = profesionalRepository.findByDni(dni).get();
+       
+        profesional.setActivo(false);
+        profesional.setMotivobaja(motivo_baja);
+
+        profesionalRepository.save(profesional);
+        return new ResponseEntity(gson.toJson("Profesional updated"), HttpStatus.OK);
+    }
+    
     
     @GetMapping("/exists/{dni}")
     public @ResponseBody ResponseEntity<?> existsProfesional(@PathVariable(name = "dni") String dni) {

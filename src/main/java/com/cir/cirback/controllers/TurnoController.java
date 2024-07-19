@@ -47,26 +47,7 @@ public class TurnoController {
     private TurnoMapper turnoMapper;
 	@Autowired
     private UserRepository userRepository;
-	
-	//Posiblemente no se use
-	/*@GetMapping("/get/{dniprofesional}")
-    public @ResponseBody ResponseEntity<?> getTurnosParaProfesional(@PathVariable(name = "dniprofesional") String dniprofesional,
-    		@RequestParam(name = "fecha", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
-		
-		Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(dniprofesional);
-        if (profesionalOptional.isPresent()) {
-        	Profesional profesional = profesionalOptional.get();
-        	List<Turno> turnos = turnoRepository.findByProfesionalAndFecha(profesional, fecha);      	
-        	
-        	return new ResponseEntity(
-    				turnos.stream().map(turnoMapper::turnoToTurnoDto).collect(Collectors.toList()),
-                    HttpStatus.OK);
-        } else {
-        	String jsonMessage = new Gson().toJson("Profesional not found");
-            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
-        }
-		
-    }*/
+
 	
 	@GetMapping("/getturno/{turnoId}")
     public @ResponseBody ResponseEntity<?> getTurnosPorId(@PathVariable(name = "turnoId") Integer turnoId) {
@@ -91,6 +72,25 @@ public class TurnoController {
         	
         	return new ResponseEntity(
         			turnos_disponibles.stream().map(turnoMapper::turnoToTurnoDto).collect(Collectors.toList()),
+                    HttpStatus.OK);
+        } else {
+        	String jsonMessage = new Gson().toJson("Profesional not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+		
+    }
+	
+	@GetMapping("/getocupados/{dniprofesional}")
+    public @ResponseBody ResponseEntity<?> getTurnosParaProfesional(@PathVariable(name = "dniprofesional") String dniprofesional) {
+		
+		Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(dniprofesional);
+        if (profesionalOptional.isPresent()) {
+        	Profesional profesional = profesionalOptional.get();
+        	List<Turno> turnos = turnoRepository.findByProfesional(profesional);      	
+        	List<Turno> turnos_futuros = turnos.stream().filter(t -> t.getPaciente() != null && t.getFecha().isAfter(LocalDate.now().minusDays(1)) ).collect(Collectors.toList());
+        	
+        	return new ResponseEntity(
+        			turnos_futuros.size(),
                     HttpStatus.OK);
         } else {
         	String jsonMessage = new Gson().toJson("Profesional not found");
@@ -172,6 +172,19 @@ public class TurnoController {
 		LocalTime hora;
         TurnoDTO turnoDTO;
         Turno turno;
+        
+        Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(turnosGenerate.getProfesionalDni());
+
+        if (!profesionalOptional.isPresent()) {
+        	String jsonMessage = new Gson().toJson("No Existe el Profesional");
+            return new ResponseEntity(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+        
+        if (!profesionalOptional.get().isActivo()) {
+        	String jsonMessage = new Gson().toJson("El profesional se encuentra deshabilitado");
+            return new ResponseEntity(jsonMessage, HttpStatus.BAD_REQUEST);
+        }
+        
 		if (LocalTime.parse(turnosGenerate.getAtencionInicio()).isBefore(LocalTime.parse(turnosGenerate.getAtencionFin()))) {
 			lugar = true;
 			hora = LocalTime.parse(turnosGenerate.getAtencionInicio());
