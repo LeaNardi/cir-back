@@ -40,22 +40,22 @@ public class Profesional {
     private Titulo titulo;
     
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "formaciones", joinColumns = @JoinColumn(name = "profesional_id"))
+    @CollectionTable(name = "formaciones", joinColumns = @JoinColumn(name = "profesional_dni"))
     @Column(name = "formacion", nullable = false)
     private List<String> formacionesComplementarias = new ArrayList<>();
     
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "publicaciones", joinColumns = @JoinColumn(name = "profesional_id"))
+    @CollectionTable(name = "publicaciones", joinColumns = @JoinColumn(name = "profesional_dni"))
     @Column(name = "publicacion", nullable = false)
     private List<String> publicacionesRevistas = new ArrayList<>();
     
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "presentaciones", joinColumns = @JoinColumn(name = "profesional_id"))
+    @CollectionTable(name = "presentaciones", joinColumns = @JoinColumn(name = "profesional_dni"))
     @Column(name = "presentacion", nullable = false)
     private List<String> presentacionesCongresos = new ArrayList<>();
     
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "experiencias", joinColumns = @JoinColumn(name = "profesional_id"))
+    @CollectionTable(name = "experiencias", joinColumns = @JoinColumn(name = "profesional_dni"))
     @Column(name = "experiencia", nullable = false)
     private List<String> experienciaLaboral = new ArrayList<>();
 }
