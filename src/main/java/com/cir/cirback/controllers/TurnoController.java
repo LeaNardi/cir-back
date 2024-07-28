@@ -4,6 +4,7 @@ import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -214,6 +215,48 @@ public class TurnoController {
 		}
         String jsonMessage = new Gson().toJson("No Turnos to Generate");
         return new ResponseEntity(jsonMessage, HttpStatus.OK);
+    }
+    
+    @GetMapping("/getallfordate/{dniprofesional}")
+	public @ResponseBody ResponseEntity<?> getTurnosParaProfesional(@PathVariable(name = "dniprofesional") String dniprofesional,
+    		@RequestParam(name = "fecha", required = false) String fecha) {
+		TurnosGenerateDTO turnosGenerate = new TurnosGenerateDTO();
+		turnosGenerate.setDuracion(15);
+		LocalDate formattedfecha = LocalDate.parse(fecha);
+		
+		Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(dniprofesional);
+        if (profesionalOptional.isPresent()) {
+        	Profesional profesional = profesionalOptional.get();
+        	turnosGenerate.setProfesionalDni(dniprofesional);
+        	turnosGenerate.setFecha(formattedfecha);
+        	
+        	List<Turno> turnos = turnoRepository.findByProfesionalAndFecha(profesional, formattedfecha);
+        	List<LocalTime> horarios = turnos.stream().map(turno -> turno.getHora()).collect(Collectors.toList());
+        			
+        	LocalTime inicio = horarios.stream().min(Comparator.naturalOrder()).orElse(null);
+        	if (inicio != null) {
+        		turnosGenerate.setAtencionInicio(inicio.toString());
+        	} else {
+        		turnosGenerate.setAtencionInicio(null);
+        	}
+        	
+        	LocalTime fin = horarios.stream().max(Comparator.naturalOrder()).orElse(null);
+        	if (fin != null) {
+        		turnosGenerate.setAtencionFin(fin.plusMinutes(turnosGenerate.getDuracion()).toString());
+        	}else {
+        		turnosGenerate.setAtencionFin(null);
+        	}
+        	
+        	
+        	
+        	return new ResponseEntity(
+    				turnosGenerate,
+                    HttpStatus.OK);
+        } else {
+        	String jsonMessage = new Gson().toJson("Profesional not found");
+            return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+
     }
 
 }
