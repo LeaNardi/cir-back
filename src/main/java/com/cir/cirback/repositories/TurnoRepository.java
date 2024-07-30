@@ -15,6 +15,7 @@ import com.cir.cirback.entities.User;
 public interface TurnoRepository extends JpaRepository<Turno, Integer>{
 	List<Turno> findByProfesional(Profesional profesional);
 	List<Turno> findByProfesionalAndFecha(Profesional profesional, LocalDate fecha);
+	long deleteByProfesionalAndFecha(Profesional profesional, LocalDate fecha);
 	Optional<Turno> findByTurnoId(Integer turnoId);
 	List<Turno> findByPaciente(User paciente);
 }

@@ -3,6 +3,7 @@ package com.cir.cirback.controllers;
 import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
@@ -12,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -166,7 +169,7 @@ public class TurnoController {
         }
 	}
 	
-    @PostMapping(path = "/generate") // Map ONLY POST Requests
+    @PostMapping(path = "/generateTurnosParaProfesional") // Map ONLY POST Requests
     public @ResponseBody ResponseEntity<String> generateTurnos(
             @RequestBody TurnosGenerateDTO turnosGenerate) {
         boolean lugar = false;
@@ -217,12 +220,13 @@ public class TurnoController {
         return new ResponseEntity(jsonMessage, HttpStatus.OK);
     }
     
-    @GetMapping("/getallfordate/{dniprofesional}")
+    @GetMapping("/getTurnosParaProfesional/{dniprofesional}")
 	public @ResponseBody ResponseEntity<?> getTurnosParaProfesional(@PathVariable(name = "dniprofesional") String dniprofesional,
     		@RequestParam(name = "fecha", required = false) String fecha) {
 		TurnosGenerateDTO turnosGenerate = new TurnosGenerateDTO();
 		turnosGenerate.setDuracion(15);
 		LocalDate formattedfecha = LocalDate.parse(fecha);
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
 		
 		Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(dniprofesional);
         if (profesionalOptional.isPresent()) {
@@ -235,14 +239,14 @@ public class TurnoController {
         			
         	LocalTime inicio = horarios.stream().min(Comparator.naturalOrder()).orElse(null);
         	if (inicio != null) {
-        		turnosGenerate.setAtencionInicio(inicio.toString());
+        		turnosGenerate.setAtencionInicio(inicio.format(dtf));
         	} else {
         		turnosGenerate.setAtencionInicio(null);
         	}
         	
         	LocalTime fin = horarios.stream().max(Comparator.naturalOrder()).orElse(null);
         	if (fin != null) {
-        		turnosGenerate.setAtencionFin(fin.plusMinutes(turnosGenerate.getDuracion()).toString());
+        		turnosGenerate.setAtencionFin(fin.plusMinutes(turnosGenerate.getDuracion()).format(dtf));
         	}else {
         		turnosGenerate.setAtencionFin(null);
         	}
@@ -257,6 +261,25 @@ public class TurnoController {
             return new ResponseEntity<>(jsonMessage, HttpStatus.NOT_FOUND);
         }
 
+    }
+    
+    @DeleteMapping(path = "/deleteTurnosParaProfesional/{dniprofesional}") 
+    @Transactional
+    public @ResponseBody ResponseEntity<String> deleteTurnos(@PathVariable(name = "dniprofesional") String dniprofesional,
+    		@RequestParam(name = "fecha", required = false) String fecha) {
+		LocalDate formattedfecha = LocalDate.parse(fecha);
+        
+        Optional<Profesional> profesionalOptional = profesionalRepository.findByDni(dniprofesional);
+
+        if (!profesionalOptional.isPresent()) {
+        	String jsonMessage = new Gson().toJson("No Existe el Profesional");
+            return new ResponseEntity(jsonMessage, HttpStatus.NOT_FOUND);
+        }
+        Profesional profesional = profesionalOptional.get();
+        long response = turnoRepository.deleteByProfesionalAndFecha(profesional, formattedfecha);
+        
+        String jsonMessage = new Gson().toJson(response + " turnos deleted");
+        return new ResponseEntity(jsonMessage, HttpStatus.OK);
     }
 
 }
